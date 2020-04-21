@@ -2,7 +2,7 @@
 
 Bash-only implementation of [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
 
-The functions semverX functions theselves have oo dependencies other than Bash 3.2.57+ (i.e. Default Bash on macOS Catalina)
+The sourced semverXX theselves have oo dependencies other than Bash 3.2.57+ (i.e. Default Bash on macOS Catalina)
 
 
 
