@@ -160,18 +160,143 @@ _error() {
   echo -en "${1}" 1>&2
 }
 
+semver_parse_usage() {
+  define usage <<EOF
+
+${C_BOLD}${C_WHITE}semver parse command:${C_RESET}
+  Validate a verison string as a semantic version
+
+${C_LTGRAY}Usage:${C_RESET}
+  ${SELF_BASENAME} parse version
+
+${C_LTGRAY}Options:
+  ${C_LTCYAN}-h, --help    ${C_RESET}help
+
+EOF
+  _echo "\n${usage}\n\n"
+}
+
 semver_parse() {
+  local arg
+  for arg in "$@"; do
+    case $arg in
+      -h|--help) semver_parse_usage; exit;;
+    esac
+  done
   semverParse "$@" && echo "${SEMVER[0]}"
+}
+
+semver_eq_usage() {
+  define usage <<EOF
+
+${C_BOLD}${C_WHITE}semver eq command:${C_RESET}
+  Returns 0 if versionA == versionB
+
+${C_LTGRAY}Usage:${C_RESET}
+  ${SELF_BASENAME} eq versionA versionB
+
+${C_LTGRAY}Options:
+  ${C_LTCYAN}-h, --help    ${C_RESET}help for update
+
+EOF
+  _echo "\n${usage}\n\n"
+}
+
+semver_eq() {
+  local arg
+  for arg in "$@"; do
+    case $arg in
+      -h|--help) semver_eq_usage; exit;;
+    esac
+  done
+  semverEQ "$@"
+  local result=$?
+  echo $result
+  exit $result
+}
+
+semver_lt_usage() {
+  define usage <<EOF
+
+${C_BOLD}${C_WHITE}semver lt command:${C_RESET}
+  Retursn 0 if versionA < versionB
+
+${C_LTGRAY}Usage:${C_RESET}
+  ${SELF_BASENAME} eq versionA versionB
+
+${C_LTGRAY}Options:
+  ${C_LTCYAN}-h, --help    ${C_RESET}help for update
+
+EOF
+  _echo "\n${usage}\n\n"
+}
+
+semver_lt() {
+  local arg
+  for arg in "$@"; do
+    case $arg in
+      -h|--help) semver_lt_usage; exit;;
+    esac
+  done
+  semverLT "$@"
+  local result=$?
+  echo $result
+  exit $result
+}
+
+semver_gt_usage() {
+  define usage <<EOF
+
+${C_BOLD}${C_WHITE}semver eq command:${C_RESET}
+  Increment a version
+
+${C_LTGRAY}Usage:${C_RESET}
+  ${SELF_BASENAME} eq versionA versionB
+
+${C_LTGRAY}Options:
+  ${C_LTCYAN}-h, --help    ${C_RESET}help for update
+
+EOF
+  _echo "\n${usage}\n\n"
+}
+
+semver_gt() {
+  local arg
+  for arg in "$@"; do
+    case $arg in
+      -h|--help) semver_gt_usage; exit;;
+    esac
+  done
+  semverGT "$@"
+  local result=$?
+  echo $result
+  exit $result
+}
+
+semver_bump_usage() {
+  define usage <<EOF
+
+${C_BOLD}${C_WHITE}semver bump command:${C_RESET}
+  Increment a version
+
+${C_LTGRAY}Usage:${C_RESET}
+  ${SELF_BASENAME} bump [-Mmp] version
+
+${C_LTGRAY}Options:
+  ${C_LTCYAN}-M            ${C_RESET}Increment Major
+  ${C_LTCYAN}-m            ${C_RESET}Increment Minor
+  ${C_LTCYAN}-p            ${C_RESET}Increment Patch
+  ${C_LTCYAN}-h, --help    ${C_RESET}help for update
+
+EOF
+  _echo "\n${usage}\n\n"
 }
 
 semver_bump() {
   local arg
   for arg in "$@"; do
     case $arg in
-      -h|--help) 
-        echo "usage: ${FUNCNAME[0]} [-Mmp] semver"
-        exit
-        ;;
+      -h|--help) semver_bump_usage; exit;;
     esac
   done
   semverBump "$@"
@@ -208,11 +333,11 @@ EOF
 }
 
 case "$1" in
-  parse) shift; semver_parse "$@";;
-  bump) shift; semver_bump "$@";;
-  eq) shift; semverEQ "$@";;
-  lt) shift; semverLT "$@";;
-  gt) shift; semverGT "$@";;
+  parse|bump|eq|lt|gt|help) 
+    cmd="$1"
+    shift;
+    eval "semver_${cmd}" "$@"
+    ;;
   -h|--help) semver_help;;
   *) _error "Unrecognized command: $1\n"; semver_help;;
 esac
