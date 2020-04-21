@@ -2,22 +2,12 @@
 
 source semver
 
-
 if [ -t 1 ] || [ -n "$OPT_COLOR" ]; then 
-  C_RESET="\x1B[0m"      # C_RESET="\e[0m"
-  C_BOLD="\x1B[1m"       # C_BOLD="\e[1m"
-  C_DEFAULT="\x1B[39m"   # C_DEFAULT="\e[39m"
-  C_WHITE="\x1B[97m"     # C_WHITE="\e[97m"
-  C_LTGRAY="\x1B[37m"    # C_LTGRAY="\e[37m"
-  C_CYAN="\x1B[36m"      # C_CYAN="\e[36m"
-  C_LTCYAN="\x1B[96m"    # C_LTCYAN="\e[96m"
-  C_RED="\x1B[31m"       # C_RED="\e[31m"
-  C_YELLOW="\x1B[33m"    # C_YELLOW="\e[33m"
+  C_RESET="\x1B[0m"; C_BOLD="\x1B[1m"; C_DEFAULT="\x1B[39m"; C_WHITE="\x1B[97m"; C_LTGRAY="\x1B[37m"; C_CYAN="\x1B[36m"; C_LTCYAN="\x1B[96m"; C_RED="\x1B[31m"; C_YELLOW="\x1B[33m";
 fi
 
-
 semverTest() {
-	local result message
+	local result message expected out
 	case "$1" in 
 		eq)
 			out=$(semverEQ "$2" "$3" 2>/dev/null)
@@ -40,16 +30,19 @@ semverTest() {
 		bump)
 			shift
 			local ARGS=( "$@" )
-			local expected="${ARGS[@]: -1}"
+			expected="${ARGS[@]: -1}"
 			unset "ARGS[${#ARGS[@]}-1]"
 			local bumpresult; bumpresult=$(semverBump "${ARGS[@]}" 2>/dev/null) 
 			message="bump ${ARGS[*]} -> $expected"
 			[[ "$bumpresult" == "$expected" ]] && result=0 || message="$message (${C_BOLD}${C_RED}Result: $bumpresult${C_RESET})"
 			;;
 		parse)
-			out=$(semverParse "$2" 2>/dev/null && echo "${SEMVER[0]}")
+			shift
+			[[ -n "$2" ]] && expected="$2" || expected="$1"
+			out=$(semverParse "$1" 2>/dev/null && echo "${SEMVER[0]}")
 			result=$?
-			message="parse $2 -> $out"
+			message="parse $1 -> $expected"
+			[[ "$out" == "$expected" ]] && result=0 || message="$message (${C_BOLD}${C_RED}Result: $out${C_RESET})"
 			;;
 		*)
 			message="${C_BOLD}${C_RED}Invalid test: $1${C_RESET}"
@@ -58,14 +51,6 @@ semverTest() {
 	[[ "$result" == "0" ]] && printf "PASS - " || printf "${C_BOLD}${C_RED}FAIL${C_RESET} - "
 	echo -e "$message"
 }
-
-
-# semverParse "001.2.3"
-# semverParse "001.2.3-"
-# semverParse "001.2.3-."
-# semverParse "001.2.3-.."
-# semverParse "001.2.3-..."
-
 
 # Parse
 echo "--Parse"
@@ -76,28 +61,46 @@ semverTest parse "1.2.3-alpha-dash-beta"
 semverTest parse "1.2.3-alpha.doubledot.beta-beta"
 semverTest parse "1.2.3+metadata"
 semverTest parse "1.2.3+metadata-dash-beta"
-# semverTest parse "1.2.3+metadata+dash+beta" #Don't have suppor for expected fail tests yet
+# semverTest parse "1.2.3+metadata+dash+beta"
 semverTest parse "1.2.3+metadata.dot.xxx" 
 semverTest parse "1.2.3+metadata.dot.xxx.yyy" 
-semverTest parse "1"
- # semverTest parse "1." 
-# semverTest parse "1..."
-semverTest parse "1.1"
-# semverTest parse "1.1."
 
-semverTest parse "001.2.3"
-semverTest parse "001.2.3-"
-semverTest parse "001.2.3-."
-semverTest parse "001.2.3-.."
-semverTest parse "001.2.3-..."
-semverTest parse "001.2.3+"
-semverTest parse "001.2.3+."
-semverTest parse "001.2.3+.."
-semverTest parse "001.2.3+..."
-semverTest parse "001.2.3-+"
-semverTest parse "001.2.3-...+..."
-semverParse "1.0.0-alpha"
-semverParse "1.0.0"
+# Optional Minor, Optional patch
+echo "--Optional Minor, Optional patch"
+semverTest parse "1" "1.0.0"
+semverTest parse "1" "1.0.0"
+semverTest parse "1.0" "1.0.0"
+semverTest parse "1.1" "1.1.0"
+semverTest parse "1.0-alpha" "1.0.0-alpha"
+semverTest parse "1-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg" "1.0.0-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg"
+semverTest parse "1.2-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg" "1.2.0-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg"
+
+# Allow leading zeros (i.e. 001.002.003), allow empty pre-release identifiers, allow empty metadata identifiers
+echo "--Leading zeros"
+semverTest parse "01.02.03" "1.2.3"
+semverTest parse "001.2.3-12" "1.2.3-12"
+semverTest parse "001.2.3-12.1" "1.2.3-12.1"
+semverTest parse "001.2.3-12.1-22" "1.2.3-12.1-22"
+semverTest parse "001.2.3-12.1-22.aaa.bbb" "1.2.3-12.1-22.aaa.bbb"
+semverTest parse "001.2.3-12.1-22.aaa.bbb+c" "1.2.3-12.1-22.aaa.bbb+c"
+semverTest parse "001.2.3-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg" "1.2.3-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg"
+semverTest parse "001.2.3-a-b.c.def.1.12+asd.x.y.zz.eee-fff" "1.2.3-a-b.c.def.1.12+asd.x.y.zz.eee-fff"
+
+# Allow empty pre-release identifiers
+echo "--Empty pre-release identifiers"
+semverTest parse "1.2.3-" "1.2.3"
+semverTest parse "1.2.3-." "1.2.3-0.0"
+semverTest parse "1.2.3-.." "1.2.3-0.0.0"
+semverTest parse "1.2.3-..." "1.2.3-0.0.0.0"
+
+# Allow empty metadata identifiers
+echo "--Empty metadata identifiers"
+semverTest parse "1.2.3+" "1.2.3"
+semverTest parse "1.2.3+." "1.2.3+0.0"
+semverTest parse "1.2.3+.." "1.2.3+0.0.0"
+semverTest parse "1.2.3+..." "1.2.3+0.0.0.0"
+
+semverTest parse "1.2.3-...+..." "1.2.3-0.0.0.0+0.0.0.0"
 
 
 # 
@@ -126,7 +129,6 @@ semverTest lt "1.0.0-beta" "1.0.0-beta.2"
 semverTest lt "1.0.0-beta.2" "1.0.0-beta.11"
 semverTest lt "1.0.0-rc.1" "1.0.0"
 
-
 semverTest gt "1.0.0-alpha.beta" "1.0.0-alpha.1"
 semverTest gt "1.0.0-alpha.beta" "1.0.0-alpha.1"
 semverTest eq "1.0.0" "1.0.0"
@@ -138,41 +140,6 @@ echo "--Dotted pre-release and build metadata"
 semverTest eq "1.0.0-rc.1+asdf.x.y.z" "1.0.0-rc.1+qwer.a.b.c"
 semverTest gt "1.0.0-rc.123.0aaa.yyy-beta.zzz+asdf.x--y.z" "1.0.0-rc.1+qwer.a.b.c"
 
-
-# Optional Minor, Optional patch
-echo "--Optional Minor, Optional patch"
-semverTest eq "1" "1.0"
-semverTest eq "1" "1.0.0"
-semverTest eq "1.0" "1.0.0"
-semverTest eq "1.1" "1.1.0"
-semverTest lt "1.0-alpha" "1.0.0"
-semverTest lt "1-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg" "1.0.1"
-semverTest gt "1.2-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg" "1.0.1"
-
-
-# Allow leading zeros (i.e. 001.002.003), allow empty pre-release identifiers, allow empty metadata identifiers
-echo "--Leading zeros"
-semverTest gt "001.2.3" "1.0.1"
-semverTest gt "001.2.3-12" "1.0.1"
-semverTest gt "001.2.3-12.1" "1.0.1"
-semverTest gt "001.2.3-12.1-22" "1.0.1"
-semverTest gt "001.2.3-12.1-22.aaa.bbb" "1.0.1"
-semverTest gt "001.2.3-12.1-22.aaa.bbb+c" "1.0.1"
-semverTest gt "001.2.3-12.1-22.aaa.bbb+ccc-ddd.eee.fff-ggg" "1.0.1"
-semverTest lt "001.2.3-a-b.c.def.1.12+asd.x.y.zz.eee-fff" "1.2.3"
-
-# Allow empty pre-release identifiers
-echo "--Empty pre-release identifiers"
-semverTest gt "001.2.3-" "1.0.1"
-semverTest gt "001.2.3-12.1-22.." "1.0.1"
-semverTest gt "001.2.3-12.1-22..+xxx" "1.0.1"
-semverTest gt "001.2.3-12.1-22..+xxx-yyy" "1.0.1"
-
-# Allow empty metadata identifiers
-echo "--Empty metadata identifiers"
-semverTest gt "001.2.3+" "1.0.1"
-semverTest gt "001.2.3+1." "1.0.1"
-semverTest gt "001.2.3+1.." "1.0.1"
 
 # Bump version
 echo "--Bump"

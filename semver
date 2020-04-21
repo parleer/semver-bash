@@ -125,7 +125,6 @@ semverBump() {
       M ) major=true;;
       m ) minor=true;;
       p ) patch=true;;
-      * ) echo "usage: ${FUNCNAME[0]} [-Mmp] semver" 1>&2; return 1;;
     esac
   done
   shift $(($OPTIND - 1))
@@ -163,7 +162,7 @@ _error() {
 semver_parse_usage() {
   define usage <<EOF
 
-${C_BOLD}${C_WHITE}semver parse command:${C_RESET}
+${C_BOLD}${C_LTGRAY}semver parse command:${C_RESET}
   Validate a verison string as a semantic version
 
 ${C_LTGRAY}Usage:${C_RESET}
@@ -173,7 +172,7 @@ ${C_LTGRAY}Options:
   ${C_LTCYAN}-h, --help    ${C_RESET}help
 
 EOF
-  _echo "\n${usage}\n\n"
+  _echo "${usage}\n\n"
 }
 
 semver_parse() {
@@ -189,7 +188,7 @@ semver_parse() {
 semver_eq_usage() {
   define usage <<EOF
 
-${C_BOLD}${C_WHITE}semver eq command:${C_RESET}
+${C_BOLD}${C_LTGRAY}semver eq command:${C_RESET}
   Returns 0 if versionA == versionB
 
 ${C_LTGRAY}Usage:${C_RESET}
@@ -199,7 +198,7 @@ ${C_LTGRAY}Options:
   ${C_LTCYAN}-h, --help    ${C_RESET}help for update
 
 EOF
-  _echo "\n${usage}\n\n"
+  _echo "${usage}\n\n"
 }
 
 semver_eq() {
@@ -218,7 +217,7 @@ semver_eq() {
 semver_lt_usage() {
   define usage <<EOF
 
-${C_BOLD}${C_WHITE}semver lt command:${C_RESET}
+${C_BOLD}${C_LTGRAY}semver lt command:${C_RESET}
   Retursn 0 if versionA < versionB
 
 ${C_LTGRAY}Usage:${C_RESET}
@@ -228,7 +227,7 @@ ${C_LTGRAY}Options:
   ${C_LTCYAN}-h, --help    ${C_RESET}help for update
 
 EOF
-  _echo "\n${usage}\n\n"
+  _echo "${usage}\n\n"
 }
 
 semver_lt() {
@@ -247,7 +246,7 @@ semver_lt() {
 semver_gt_usage() {
   define usage <<EOF
 
-${C_BOLD}${C_WHITE}semver eq command:${C_RESET}
+${C_BOLD}${C_LTGRAY}semver eq command:${C_RESET}
   Increment a version
 
 ${C_LTGRAY}Usage:${C_RESET}
@@ -257,7 +256,7 @@ ${C_LTGRAY}Options:
   ${C_LTCYAN}-h, --help    ${C_RESET}help for update
 
 EOF
-  _echo "\n${usage}\n\n"
+  _echo "${usage}\n\n"
 }
 
 semver_gt() {
@@ -276,7 +275,7 @@ semver_gt() {
 semver_bump_usage() {
   define usage <<EOF
 
-${C_BOLD}${C_WHITE}semver bump command:${C_RESET}
+${C_BOLD}${C_LTGRAY}semver bump command:${C_RESET}
   Increment a version
 
 ${C_LTGRAY}Usage:${C_RESET}
@@ -289,7 +288,7 @@ ${C_LTGRAY}Options:
   ${C_LTCYAN}-h, --help    ${C_RESET}help for update
 
 EOF
-  _echo "\n${usage}\n\n"
+  _echo "${usage}\n\n"
 }
 
 semver_bump() {
@@ -305,7 +304,7 @@ semver_bump() {
 semver_help() {
    define usage <<EOF
 
-${C_BOLD}${C_WHITE}semver${C_RESET}
+${C_BOLD}${C_LTGRAY}semver${C_RESET}
 
 ${C_LTGRAY}Usage:${C_RESET}
   ${SELF_BASENAME} [command]
@@ -327,9 +326,9 @@ ${C_LTGRAY}Global Options:${C_RESET}
   ${C_LTCYAN}-h, --help           ${C_RESET}help
 
 EOF
-  _echo "\n${usage}\n"
-  _echo "\n${commands}\n"
-  _echo "\n${options}\n\n"
+  _echo "${usage}\n\n"
+  _echo "${commands}\n\n"
+  _echo "${options}\n\n"
 }
 
 case "$1" in
@@ -338,7 +337,7 @@ case "$1" in
     shift;
     eval "semver_${cmd}" "$@"
     ;;
-  -h|--help) semver_help;;
+  -h|--help|"") semver_help;;
   *) _error "Unrecognized command: $1\n"; semver_help;;
 esac
 
