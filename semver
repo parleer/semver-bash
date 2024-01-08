@@ -3,7 +3,7 @@
 # semverParse
 # 
 # Parse a valid semver according to https://semver.org/spec/v2.0.0.html and 
-# return it's individual compoentns in an array. 
+# return its individual components in an array.
 # 
 # The array name defaults to SEMVER, but can be specified in parameter 2.
 # 
@@ -14,13 +14,13 @@
 #   SEMVER[2] - minor
 #   SEMVER[3] - patch
 #   SEMVER[4] - pre-release
-#   SEMVER[5] - buld metadata
+#   SEMVER[5] - build metadata
 #
 # Optionally, supports loose parsing of semver:
 #  - Optional Minor, Optional Patch: "1" -> "1.0.0" and "1.1" -> "1.1.0"
 #  - Allow leading zeros: "001.002" -> "1.2.0"
 #
-# Note: Do not call with varname of any local varaibles to the semverParse function. (i.e. __v, __t, __i)
+# Note: Do not call with varname of any local variables to the semverParse function. (i.e. __v, __t, __i)
 # 
 # Usage: semverParse semver [varname]
 # Returns: 0 on successful parse, 1 otherwise
