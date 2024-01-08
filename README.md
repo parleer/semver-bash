@@ -1,6 +1,7 @@
 # semver-bash
 
-Bash-only implementation of [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html). Correctly parses and compares complex version strings, but with a convenint loose-parsing algorithm that includes support for:
+Bash-only implementation of [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html). Correctly parses and compares complex version strings, but with a convenient loose-parsing algorithm that includes support for:
+
 - leading zeros
 - optional minor 
 - optional patch
@@ -65,7 +66,7 @@ The semver CLI has the following dependencies:
 ```
 $ semver parse -h
 semver parse command:
-  Validate a verison string as a semantic version
+  Validate a version string as a semantic version
 
 Usage:
   semver parse version
@@ -182,7 +183,7 @@ $ semver eq 1.0.0-rc.1+asdf.x.y.z 1.0.0-rc.1+qwer.a.b.c
 ```
 $ semver lt -h
 semver lt command:
-  Retursn 0 if versionA < versionB
+  Returns 0 if versionA < versionB
 
 Usage:
   semver eq versionA versionB
