@@ -133,6 +133,23 @@ semverTest gt "1.0.0-alpha.beta" "1.0.0-alpha.1"
 semverTest gt "1.0.0-alpha.beta" "1.0.0-alpha.1"
 semverTest eq "1.0.0" "1.0.0"
 
+#
+# Lexicographic ordering
+#
+echo "--Lexicographic ordering of pre-release identifiers (by ASCII values)"
+semverTest lt "1.0.0--" "1.0.0-a"
+semverTest lt "1.0.0--" "1.0.0-A"
+semverTest lt "1.0.0-A" "1.0.0-Z"
+semverTest lt "1.0.0-A" "1.0.0-a" # !
+semverTest lt "1.0.0-Z" "1.0.0-a" # !
+semverTest lt "1.0.0-A" "1.0.0-b"
+semverTest lt "1.0.0-a" "1.0.0-z"
+semverTest lt "1.0.0-aa" "1.0.0-aaa"
+semverTest lt "1.0.0-aaz" "1.0.0-ab"
+semverTest lt "1.0.0-0x10" "1.0.0-0x20"
+semverTest lt "1.0.0-v.0" "1.0.0-v.-1"
+semverTest lt "1.0.0-v.2" "1.0.0-v-.1"
+
 # 
 # Dotted pre-release and build metadata
 # 
