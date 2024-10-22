@@ -31,16 +31,16 @@ semverParse() {
 
 # optional minor, optional patch, allow leading zeros, allow empty pre-release identifiers, allow empty metadata identifiers (captures 1, 3, 5, 7, 9)
   if [[ "$1" =~ ^([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(-([0-9A-Za-z\.\-]*))?(\+([0-9A-Za-z\.\-]*))?$ ]]; then
-    __v=("$((10#${BASH_REMATCH[1]}))" "$((10#${BASH_REMATCH[3]}))" "$((10#${BASH_REMATCH[5]}))" "${BASH_REMATCH[7]}" "${BASH_REMATCH[9]}")
+    __v=("$((10#${BASH_REMATCH[1]}))" "$((10#${BASH_REMATCH[3]:-0}))" "$((10#${BASH_REMATCH[5]:-0}))" "${BASH_REMATCH[7]}" "${BASH_REMATCH[9]}")
     for __i in 3 4; do while [[ "${__v[$__i]}" =~ \.\. ]]; do __v[$__i]=${__v[$__i]/\.\./.0.}; done; [[ "${__v[$__i]}" =~ ^\. ]] &&  __v[$__i]="0${__v[$__i]}"; [[ "${__v[$__i]}" =~ \.$ ]] &&  __v[$__i]="${__v[$__i]}0"; done
 
 # optional minor, optional patch, allow leading zeros (captures 1, 3, 5, 7, 11)
   # if [[ "$1" =~ ^([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(-([0-9A-Za-z-]+(\.([0-9A-Za-z-]+))*))?(\+([0-9A-Za-z-]+(\.([0-9A-Za-z-]+))*))?$ ]]; then
-  #    __v=("$((10#${BASH_REMATCH[1]}))" "$((10#${BASH_REMATCH[3]}))" "$((10#${BASH_REMATCH[5]}))" "${BASH_REMATCH[7]}" "${BASH_REMATCH[11]}")
+  #    __v=("$((10#${BASH_REMATCH[1]}))" "$((10#${BASH_REMATCH[3]:-0}))" "$((10#${BASH_REMATCH[5]:-0}))" "${BASH_REMATCH[7]}" "${BASH_REMATCH[11]}")
 
 # optional minor, optional patch (captures 1, 3, 5, 7, 12)
   # if [[ "$1" =~ ^(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(\.(0|[1-9][0-9]*))?(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$ ]]; then
-  #   __v=("$((10#${BASH_REMATCH[1]}))" "$((10#${BASH_REMATCH[3]}))" "$((10#${BASH_REMATCH[5]}))" "${BASH_REMATCH[7]}" "${BASH_REMATCH[12]}")    
+  #   __v=("$((10#${BASH_REMATCH[1]}))" "$((10#${BASH_REMATCH[3]:-0}))" "$((10#${BASH_REMATCH[5]:-0}))" "${BASH_REMATCH[7]}" "${BASH_REMATCH[12]}")    
 
 # full validation (captures 1, 2, 3, 5, 10)
   # if [[ "$1" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$ ]]; then
